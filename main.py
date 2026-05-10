@@ -24,6 +24,14 @@ app = Flask(__name__)
 def home():
     return render_template("home/home.html", x=x, y=y, o=o)
 
+@app.route('/2nd')
+def recomendation():
+    return render_template('2nd_page/2nd.html')
+
+@app.route('/about')
+def about():
+    return render_template('about/about.html')
+
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
@@ -54,7 +62,7 @@ def login():
 
         # user finns och lösenord matchar
         if user and user["password"] == password:
-            return "Inloggning lyckades"
+            return redirect(url_for('recomendation'))
 
         return "Fel username eller password"
 
