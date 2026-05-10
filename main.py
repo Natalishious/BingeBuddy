@@ -26,7 +26,7 @@ def home():
 
 @app.route('/2nd')
 def recomendation():
-    return render_template('2nd_page/2nd.html')
+    return render_template('inlogsida/2nd.html')
 
 @app.route('/about')
 def about():

@@ -1,0 +1,47 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+<style>
+
+.hero{
+    text-align:center;
+    margin-top:100px;
+}
+
+.hero a{
+    text-decoration:none;
+    background:#4CAF50;
+    color:white;
+    padding:15px 30px;
+    border-radius:8px;
+    font-size:24px;
+    font-weight:bold;
+    transition:0.3s;
+}
+
+.hero a:hover{
+    background:#45a049;
+}
+
+</style>
+
+<div class="container">
+
+    
+    <div class="navbar">
+        <h1>MyFlaskApp</h1>
+        <div>
+            
+            <a href="#"></a>
+            <a href="{{url_for('home')}}">logout</a>
+        </div>
+    </div>
+    
+    <div class="hero">
+        <h1><a href="#">recomend</a></h1>
+    </div>
+    
+</div>
+    
+{% endblock %}
