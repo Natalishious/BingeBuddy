@@ -1,6 +1,7 @@
 from flask import Flask, redirect, render_template, request, url_for
 from database import init_db, create_user, get_user
 from movies import movies, genras, rating
+from recommender import recommend_movies, df
 
 init_db()  # Skapar db
 
@@ -24,9 +25,20 @@ app = Flask(__name__)
 def home():
     return render_template("home/home.html", x=x, y=y, o=o)
 
-@app.route('/2nd')
+@app.route('/2nd', methods=["GET", "POST"])
 def recomendation():
-    return render_template('inlogsida/2nd.html')
+    '''
+    Skickar en request med titel och hämtar en lista med de mest liknande filmerna
+    '''
+    recommendations = [] # container
+    if request.method == "POST": # detta block körs endast om användaren klickar
+        movie_title = request.form.get("movie_title") # hämta det användaren skrev i input-field
+        recommendations = recommend_movies(movie_title) # anropar ML-funktionen och ge tillbaka en lista
+
+    return render_template('inlogsida/2nd.html',
+                           recommendations=recommendations, # för jinja
+                           movies=df["title"].tolist()) # SAMTLIGA filmtitlar för t.ex. autofill i input-field
+
 
 @app.route('/about')
 def about():
