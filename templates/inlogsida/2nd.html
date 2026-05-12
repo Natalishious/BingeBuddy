@@ -1,0 +1,75 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+<style>
+
+.hero{
+    text-align:center;
+    margin-top:100px;
+}
+
+.hero a{
+    text-decoration:none;
+    background:#4CAF50;
+    color:white;
+    padding:15px 30px;
+    border-radius:8px;
+    font-size:24px;
+    font-weight:bold;
+    transition:0.3s;
+}
+
+.hero a:hover{
+    background:#45a049;
+}
+
+</style>
+
+<div class="container">
+
+    
+    <div class="navbar">
+        <h1>MyFlaskApp</h1>
+        <div>
+            
+            <a href="#"></a>
+            <a href="{{url_for('home')}}">logout</a>
+        </div>
+    </div>
+    
+    <div class="hero">
+        <h1>Recommender</h1>
+
+        <form method="POST">
+            <!-- Möjliggör att skriva in en titel och få förslag som auto complete -->
+            <!-- name="movie_title" kopplar till flasks request.form.get -->
+            <!-- list="movies" betyder att input-fältet använder en datalist som heter movies (se längre ner) -->
+            <!-- och movies kommer från flask, men från början från (df["title"].tolist()) -->
+            <input type="text" name="movie_title" list="movies" placeholder="Enter movie title">
+
+            
+            <!-- datalist fylls med samtliga titlar från jinja/flask, innehållande de tecken användaren skriver -->
+            <datalist id="movies">
+                {% for movie in movies %}
+                    <!-- fyller automatiskt i input-fältet när option väljs -->
+                    <option value="{{ movie }}"></option>
+                {% endfor %}
+            </datalist>
+
+            <button type="submit">Recommend</button>
+        </form>
+
+        {% if recommendations %}
+            <h2>Recommended movies</h2>
+            <ul>
+                {% for movie in recommendations %}
+                    <li> {{ movie }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    </div>
+    
+</div>
+    
+{% endblock %}

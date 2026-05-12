@@ -1,0 +1,47 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+
+
+<div class="container">
+    
+    <div class="navbar">
+        <h1>MyFlaskApp</h1>
+        <div>
+            
+            <a href="{{url_for('recomendation')}}">recomendation</a>
+            <a href="{{url_for('register')}}">register</a>
+            <a href="about">About</a>
+            <a href="{{url_for('login')}}">Login</a>
+        </div>
+    </div>
+
+    <div class="hero">
+        <h2>Welcome to movie recomendation</h2>
+        <h3></h3>
+        <p></p>
+        <h2>this week</h2>
+    </div>
+
+    <div class="cards">
+        <div class="card">
+            <h3>movie</h3>
+            <p class="values">{{x}}</p>
+        </div>
+        <div class="card">
+            <h3>genres</h3>
+            <p class="values">{{y}}</p>
+        </div>
+        <div class="card">
+            <h3>rating</h3>
+            <p class="values">{{o}}</p>
+        </div>
+    </div>
+
+</div>
+
+
+</html>
+        
+{% endblock %}
