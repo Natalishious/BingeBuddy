@@ -9,7 +9,10 @@ import pandas as pd
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 
+
 df = pd.read_csv("data/movies_cleaned_old.csv")
+
+
 
 df["features"] = df["genres"].str.replace("|", " ", regex=False)
 
@@ -54,4 +57,5 @@ def recommend_movies(movie_title):
     for i in sim_scores:
         movie_indices.append(i[0])
 
-    return df["title"].iloc[movie_indices] # använder ovan index för att med iloc lokalisera och returnera titlarna
+    # använder ovan index för att med iloc lokalisera och returnera titlarna som en lista
+    return df["title"].iloc[movie_indices].tolist() 
