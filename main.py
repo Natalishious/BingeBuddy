@@ -1,4 +1,4 @@
-from flask import Flask, redirect, render_template, request, url_for
+from flask import Flask, redirect, render_template, request, url_for, session
 from database import init_db, create_user, get_user
 from movies import movies, genras, rating
 from recommender import recommend_movies, df
@@ -19,25 +19,38 @@ o = rating()
 
 
 app = Flask(__name__)
+# Secret key
+app.secret_key = "SECRET_KEY"
 
 
 @app.route("/")
 def home():
-    return render_template("home/home.html", x=x, y=y, o=o)
+    return render_template(
+        "home/home.html",
+        x=x,
+        y=y,
+        o=o,
+        # Skickar med username här så man kan visa i HTML om någon är inloggad
+        username=session.get("username")
+    )
+
 
 @app.route('/2nd', methods=["GET", "POST"])
 def recomendation():
     '''
     Skickar en request med titel och hämtar en lista med de mest liknande filmerna
     '''
-    recommendations = [] # container
-    if request.method == "POST": # detta block körs endast om användaren klickar
-        movie_title = request.form.get("movie_title") # hämta det användaren skrev i input-field
-        recommendations = recommend_movies(movie_title) # anropar ML-funktionen och ge tillbaka en lista
+    recommendations = []  # container
+    if request.method == "POST":  # detta block körs endast om användaren klickar
+        # hämta det användaren skrev i input-field
+        movie_title = request.form.get("movie_title")
+        # anropar ML-funktionen och ge tillbaka en lista
+        recommendations = recommend_movies(movie_title)
 
     return render_template('inlogsida/2nd.html',
-                           recommendations=recommendations, # för jinja
-                           movies=df["title"].tolist()) # SAMTLIGA filmtitlar för t.ex. autofill i input-field
+                           recommendations=recommendations,  # för jinja
+                           # SAMTLIGA filmtitlar för t.ex. autofill i input-field
+                           movies=df["title"].tolist())
 
 
 @app.route('/about')
@@ -74,11 +87,18 @@ def login():
 
         # user finns och lösenord matchar
         if user and user["password"] == password:
-            return redirect(url_for('recomendation'))
-
-        return "Fel username eller password"
+            session["username"] = username
+            return redirect(url_for("home"))
+        return "Fel username eller password!"
 
     return render_template("login.html")
+
+
+@app.route("/logout")
+def logout():
+    # Tar bort user från session när man loggar ut
+    session.pop("username", None)
+    return redirect(url_for("home"))
 
 
 if __name__ == "__main__":
