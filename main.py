@@ -2,6 +2,7 @@ from flask import Flask, redirect, render_template, request, url_for, session
 from database import init_db, create_user, get_user
 from movies import movies, genras, rating
 from recommender import recommend_movies, df
+from recommender_advanced import recommend_movies_advanced
 
 init_db()  # Skapar db
 
@@ -45,7 +46,7 @@ def recomendation():
         # hämta det användaren skrev i input-field
         movie_title = request.form.get("movie_title")
         # anropar ML-funktionen och ge tillbaka en lista
-        recommendations = recommend_movies(movie_title)
+        recommendations = recommend_movies_advanced(movie_title)
 
     return render_template('inlogsida/2nd.html',
                            recommendations=recommendations,  # för jinja
