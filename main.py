@@ -36,6 +36,7 @@ def home():
     )
 
 
+
 @app.route('/2nd', methods=["GET", "POST"])
 def recomendation():
     '''
