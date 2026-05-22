@@ -8,6 +8,7 @@ Där det finns mer utförliga kommentarer
 import pandas as pd
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
+import random
 
 df = pd.read_csv("dataset/movies_cleaned.csv")
 
@@ -28,7 +29,7 @@ similarity = cosine_similarity(tfidf_matrix)
 def recommend_movies_advanced(movie_title):
     '''
     Tar in en titel, och om den finns i datasettet, så matchas dess features mot andra filmer
-    och ger tillbaka en lista med de 5 mest liknande
+    och ger tillbaka en lista med de 25 mest liknande, rankad efter simularity
     '''
 
     if movie_title not in df["title"].values:
@@ -51,19 +52,64 @@ def recommend_movies_advanced(movie_title):
             filtered_scores.append(score)
     sim_scores = filtered_scores
 
-    sim_scores = sim_scores[:5] # fem första
+    sim_scores = sim_scores[:25] # 25 första
 
     # lägger indexet för ovan filmer i en egen lista
-    movie_indices = []
-    for i in sim_scores:
-        movie_indices.append(i[0])
+    # movie_indices = []
+    # for i in sim_scores:
+    #     movie_indices.append(i[0])
 
-    # vi kan också skicka tillbaka en lista med dictionary innehållande titel och movie rating för enkel visning i html
+    # vi kan också skicka tillbaka en lista med dictionaries för titel, similarity score, betyg, bildlänk o.s.v.
     results = []
-    for i in movie_indices:
+    for movie in sim_scores:
+        movie_index = movie[0] # filmens index
+        similarity_score = movie[1] # filmens similarity score
+        poster_path = df.iloc[movie_index]["poster_path"] # hämtar TMDBs relativa sökväg för posterbild
+
+        # safeguard om Nan-rad i poster-länk i datasetet
+        if pd.notna(poster_path): 
+            poster_url = "https://image.tmdb.org/t/p/w500" + str(poster_path) # lägger till relativ sökväg
+        else:
+            poster_url = None
+
         results.append({
-            "title": df.iloc[i]["title"],
-            "rating": round(df.iloc[i]["movielens_avg_rating"], 1) # avrunda till 1 decimal
+            "title": df.iloc[movie_index]["title"],
+            "rating": round(df.iloc[movie_index]["movielens_avg_rating"], 1), # avrunda till 1 decimal
+            "similarity": round(similarity_score * 100, 1), # multiplicera med 100 för att få ett värde i %
+            "poster": poster_url # url till filmens poster i jpg-format
         })
 
     return results
+
+
+def get_random_movie():
+    '''
+    Filtrerar samtliga filmer i datasetet med en rating som är 4 eller högre,
+    och skickar tillbaka titel + genre + rating
+    '''
+    high_rated = df[df["movielens_avg_rating"] >= 4] # hämtar alla filmer med score 4 eller högre
+
+    movie = high_rated.sample(1).iloc[0] # väljer ut (1) rad på måfå bland filtrerade filmer
+
+    return {
+
+        "title": movie["title"],
+
+        "genres": movie["genres"],
+
+        "rating": round(movie["movielens_avg_rating"], 1)
+    }
+
+# test för att se att utskrift sker korrekt i terminal
+if __name__ == "__main__":
+
+    print("=== RECOMMENDATIONS ===")
+
+    recommendations = recommend_movies_advanced("Toy Story (1995)")
+
+    for movie in recommendations:
+        print(movie)
+
+    print("\n=== RANDOM MOVIE ===")
+
+    print(get_random_movie())
