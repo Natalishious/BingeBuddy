@@ -7,14 +7,14 @@
 <div class="container">
     
     <div class="navbar">
-        <h1>MyFlaskApp</h1>
+        <a href="{{url_for('home')}}"><img width="20%" height="20%" src="{{url_for('static', filename='assets/BingeBuddyLogo.png')}}" alt="logo"></a>
         <div>
             
             <a href="{{url_for('recomendation')}}">recomendation</a>
             <a href="{{url_for('register')}}">register</a>
             <a href="about">About</a>
                 {% if username %}
-                    <span>Inloggad som {{ username }}</span>
+                    <h3>{{ username }}</h3>
                     <a href="{{url_for('logout')}}">Logout</a>
                 {% else %}
                     <a href="{{url_for('login')}}">Login</a>
@@ -33,15 +33,15 @@
     <div class="cards">
         <div class="card">
             <h3>movie</h3>
-            <p class="values">{{x}}</p>
+            <p class="values">{{recently['title']}}</p>
         </div>
         <div class="card">
             <h3>genres</h3>
-            <p class="values">{{y}}</p>
+            <p class="values">{{recently['genres']}}</p>
         </div>
         <div class="card">
             <h3>rating</h3>
-            <p class="values">{{o}}</p>
+            <p class="values">{{recently['rating']}}</p>
         </div>
     </div>
 

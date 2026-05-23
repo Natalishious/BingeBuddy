@@ -2,7 +2,7 @@ from flask import Flask, redirect, render_template, request, url_for, session
 from database import init_db, create_user, get_user
 from movies import movies, genras, rating
 from recommender import recommend_movies, df
-from recommender_advanced import recommend_movies_advanced
+from recommender_advanced import recommend_movies_advanced, get_random_movie
 
 init_db()  # Skapar db
 
@@ -26,11 +26,13 @@ app.secret_key = "SECRET_KEY"
 
 @app.route("/")
 def home():
+    
+    recently = get_random_movie()
+    
+    
     return render_template(
         "home/home.html",
-        x=x,
-        y=y,
-        o=o,
+        recently=recently,
         # Skickar med username här så man kan visa i HTML om någon är inloggad
         username=session.get("username")
     )
