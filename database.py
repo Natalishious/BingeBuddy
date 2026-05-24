@@ -23,6 +23,14 @@ def init_db():
         )
     """)  # Skapar en users tabell om det inte redan finns
 
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS favorites (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id INTEGER NOT NULL,
+            movie_title TEXT NOT NULL
+        )
+    """) # skapar en tabell med favorit-filmer
+
     conn.commit()
     conn.close()
 
@@ -63,3 +71,77 @@ def get_user(username):
 
     conn.close()
     return user
+
+
+def add_favorite(user_id, movie_title):
+    '''
+    Lägger till en film i tabellen för favoritfilmer, om den inte redan finns där
+    '''
+    conn = get_connection()
+
+    existing = conn.execute(
+        "SELECT 1 FROM favorites WHERE user_id = ? AND movie_title = ?",
+        (user_id, movie_title)
+    ).fetchone()
+
+    if existing: # safeguard utifall filmen redan finns -> undviker dubbletter
+        conn.close()
+        return
+
+    conn.execute(
+        "INSERT INTO favorites (user_id, movie_title) VALUES (?, ?)",
+        (user_id, movie_title)
+    )
+
+    conn.commit()
+    conn.close()
+
+# def add_favorite(user_id, movie_title):
+
+#     conn = get_connection()
+
+#     try:
+#         conn.execute(
+#             "INSERT INTO favorites (user_id, movie_title) VALUES (?, ?)",
+#             (user_id, movie_title)
+#         )
+#         conn.commit()
+
+#     except sqlite3.IntegrityError:
+#         # redan finns → gör inget
+#         pass
+
+#     finally:
+#         conn.close()
+
+
+def remove_favorite(user_id, movie_title):
+    '''
+    Tar bort en film från datasetet ur tabellen för favoritfilmer
+    '''
+
+    conn = get_connection()
+
+    conn.execute(
+        "DELETE FROM favorites WHERE user_id = ? AND movie_title = ?",
+        (user_id, movie_title)
+    )
+
+    conn.commit()
+    conn.close()
+
+
+def get_favorites(user_id):
+    '''
+    Returnerar en lista med samtliga titlar ur användarens favoritfilm-tabell
+    '''
+    conn = get_connection()
+
+    favorites = conn.execute(
+        "SELECT movie_title FROM favorites WHERE user_id = ?",
+        (user_id,)
+    ).fetchall()
+
+    conn.close()
+
+    return favorites
