@@ -6,48 +6,31 @@
 
 <div class="container">
     
-    <div class="navbar">
-        <a href="{{url_for('home')}}"><img width="20%" height="20%" src="{{url_for('static', filename='assets/BingeBuddyLogo.png')}}" alt="logo"></a>
-        <div>
-            
-            <a href="{{url_for('recomendation')}}">recomendation</a>
-            <a href="{{url_for('register')}}">register</a>
-            <a href="about">About</a>
-                {% if username %}
-                    <h3>{{ username }}</h3>
-                    <a href="{{url_for('logout')}}">Logout</a>
-                {% else %}
-                    <a href="{{url_for('login')}}">Login</a>
-                {% endif %}
-         
-        </div>
-    </div>
 
     <div class="hero">
-        <h2>Welcome to movie recomendation</h2>
-        <h3></h3>
-        <p></p>
-        <h2>this week</h2>
+        <h2>Welcome to movie recommendation</h2>
+        <h2>This week</h2>
     </div>
 
     <div class="cards">
+
         <div class="card">
-            <h3>movie</h3>
+            <h3>Movie</h3>
             <p class="values">{{recently['title']}}</p>
         </div>
+
         <div class="card">
-            <h3>genres</h3>
+            <h3>Genres</h3>
             <p class="values">{{recently['genres']}}</p>
         </div>
+
         <div class="card">
-            <h3>rating</h3>
+            <h3>Rating</h3>
             <p class="values">{{recently['rating']}}</p>
         </div>
+
     </div>
 
 </div>
-
-
-</html>
         
 {% endblock %}

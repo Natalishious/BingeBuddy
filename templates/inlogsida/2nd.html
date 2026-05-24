@@ -2,96 +2,17 @@
 
 {% block content %}
 
-<style>
 
-
-.hero{
-    text-align:center;
-    margin-top:100px;
-}
-
-.hero a{
-    text-decoration:none;
-    background:#4CAF50;
-    color:white;
-    padding:15px 30px;
-    border-radius:8px;
-    font-size:24px;
-    font-weight:bold;
-    transition:0.3s;
-}
-
-.hero a:hover{
-    background:#45a049;
-}
-
-.movie-table {
-        width: 100%;
-        max-width: 600px;
-        margin: 20px auto;
-        border-collapse: collapse;
-        font-family: Arial, sans-serif;
-        background: #ffffff;
-        border-radius: 12px;
-        overflow: hidden;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    }
-
-    .movie-table thead {
-        background: linear-gradient(135deg, #6c63ff, #4a47d5);
-        color: white;
-    }
-
-    .movie-table th {
-        padding: 16px;
-        text-align: center;
-        font-size: 1.2rem;
-        letter-spacing: 0.5px;
-    }
-
-    .movie-table td {
-        padding: 14px 16px;
-        border-bottom: 1px solid #eee;
-        color: #222; /* FIX */
-        background-color: white;
-        transition: background 0.2s ease;
-    }
-
-    .movie-table tbody tr:hover td {
-        background-color: #f5f7ff;
-    }
-
-    .movie-table tbody tr:nth-child(even) td {
-        background-color: #fafafa;
-    }
-
-
-
-    
-
-
-
-</style>
 
 <div class="container">
-
-    
-    <div class="navbar">
-        <a href="{{url_for('home')}}"><img width="12%" height="12%" src="{{url_for('static', filename='assets/BingeBuddyLogo.png')}}" alt="logo"></a>
-        <div>
-            
-            <a href="#"></a>
-            <a href="#"></a>
-            
-            
-            
-        </div>
-    </div>
     
     <div class="hero">
         <h1>Recommender</h1>
-
-        <form method="POST">
+        <p>
+            Discover movies based on your favorite films and genres.
+        </p>
+        
+        <form method="POST" class="recommend-form">
             <!-- Möjliggör att skriva in en titel och få förslag som auto complete -->
             <!-- name="movie_title" kopplar till flasks request.form.get -->
             <!-- list="movies" betyder att input-fältet använder en datalist som heter movies (se längre ner) -->
@@ -116,8 +37,8 @@
         <table class="movie-table">
             <thead>
                 <tr>
-                    <th>recomended movies</th>
-                    <th>rating</th>
+                    <th>Recommended movies</th>
+                    <th>Rating</th>
                 </tr>
             </thead>
             <tbody>
@@ -137,8 +58,8 @@
             <table class="movie-table">
                 <thead>
                     <tr>
-                        <th>recomended movies</th>
-                        <th>rating</th>
+                        <th>Recommended movies</th>
+                        <th>Rating</th>
                     </tr>
                 </thead>
                 <tbody>
