@@ -2,7 +2,7 @@ from flask import Flask, redirect, render_template, request, url_for, session
 from database import init_db, create_user, get_user, get_favorites, add_favorite, remove_favorite
 from movies import movies, genras, rating
 from recommender import recommend_movies, df
-from recommender_advanced import recommend_movies_advanced, get_random_movie
+from recommender_advanced import recommend_movies_advanced, get_random_movie, recommend_from_favorites
 import pandas as pd
 
 init_db()  # Skapar db
@@ -141,12 +141,19 @@ def profile():
             "poster": poster_url
         })
 
+    # bygger lista med favorittitlar och kallar på recommender-funktionen
+    favorite_titles = []
+    for row in favorites:
+        favorite_titles.append(row["movie_title"])
+    recommended_movies = recommend_from_favorites(favorite_titles)
+
     return render_template(
         "profile.html",
         user=user,
         favorites=favorites,
         movies=df["title"].tolist(),
-        favorite_movies=favorite_movies
+        favorite_movies=favorite_movies,
+        recommended_movies=recommended_movies
     )
 
 @app.route("/add_favorite", methods=["POST"])
