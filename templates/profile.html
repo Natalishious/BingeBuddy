@@ -57,6 +57,29 @@
         {% endfor %}
     </table>
     {% endif %}
+    
+    <!-- om det finns favorittitlar så visas rekommenderade filmer (utifrån rekommendationer) i en annan table -->
+     {% if recommended_movies %}
+    <h2>Recommended movies</h2>
 
+    <table>
+        <tr>
+            <th>Title</th>
+            <th>Genres</th>
+            <th>Rating</th>
+            <th>Similarity</th>
+        </tr>
+
+        {% for movie in recommended_movies %}
+        <tr>
+            <td>{{ movie.title }}</td>
+            <td>{{ movie.genres }}</td>
+            <td>{{ movie.rating }}</td>
+            <td>{{ movie.similarity }}%</td>
+        </tr>
+        {% endfor %}
+    </table>
+    
+{% endif %}
     </div>
 {% endblock %}

@@ -100,6 +100,58 @@ def get_random_movie():
         "rating": round(movie["movielens_avg_rating"], 1)
     }
 
+def recommend_from_favorites(favorite_titles):
+    '''
+    Tar in en lista med samtliga filmer i användarens "favoriter",
+    hämtar deras index och similarity scores, sumerar poängen och
+    returnerar de X antal (10) filmer med högst poäng
+    '''
+    total_scores = {} # index: sim_score
+    
+    for title in favorite_titles: # loopa igenom favoritfilmer
+
+        if title not in df["title"].values: # safeguard
+            continue
+
+        idx = df[df["title"] == title].index[0] # hämta index från favoritfilm
+        sim_scores = similarity[idx] # hämta similarity score för denna film
+
+        for movie_index, score in enumerate(sim_scores): # för varje filmindex och poäng
+            movie_title = df.iloc[movie_index]["title"] # om filmen finns bland favorittitlar, hoppa över
+            
+            if movie_title in favorite_titles: # hoppa över filmer användaren redan gillar
+                continue
+
+            if movie_index in total_scores: # om filmen redan finns:
+                total_scores[movie_index] += score # lägg till index och score eller plussa på score
+
+            else: # annars skapa ny entry
+                total_scores[movie_index] = score
+    
+    # sortera efter högst total score
+    sorted_movies = sorted(total_scores.items(), key=lambda x: x[1], reverse=True)
+
+    sorted_movies = sorted_movies[:10] # bara de tio högst rankade
+
+    # bygg lista med titel, betyg, poster path et.c. för jinja
+    results = []
+    for movie_index, score in sorted_movies:
+        poster_path = df.iloc[movie_index]["poster_path"]
+        if pd.notna(poster_path):
+            poster_url = ("https://image.tmdb.org/t/p/w500" + str(poster_path))
+        else:
+            poster_url = None # safeguard
+        
+        results.append({
+            "title": df.iloc[movie_index]["title"],
+            "genres": df.iloc[movie_index]["genres"],
+            "rating": round(df.iloc[movie_index]["movielens_avg_rating"], 1),
+            "similarity": round(score * 100, 1),
+            "poster": poster_url
+        })
+        
+    return results
+
 # test för att se att utskrift sker korrekt i terminal
 if __name__ == "__main__":
 
