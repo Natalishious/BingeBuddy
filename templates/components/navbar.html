@@ -10,7 +10,7 @@
         <a href="{{url_for('about')}}">About</a>
 
         {% if username %}
-            <h3>{{ username }}</h3>
+            <a href="{{url_for('profile')}}">{{ username }}</a>
             <a href="{{url_for('logout')}}">Logout</a>
         {% else %}
             <a href="{{url_for('login')}}">Login</a>
