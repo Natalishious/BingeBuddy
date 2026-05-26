@@ -15,7 +15,7 @@ df = pd.read_csv("dataset/movies_cleaned.csv")
 # kombinerar flera features
 # fillna safeguardar mot eventuella NaN-rader i overview
 df["features"] = (
-    df["genres"].fillna("").str.replace("|", " ", regex=False)
+    df["genres"].fillna("").str.replace("|", " ", regex=False) * 4 # viktar kategorin genres hårdare
     + " " +
     df["overview"].fillna("")
 )
@@ -146,7 +146,8 @@ def recommend_from_favorites(favorite_titles):
             "title": df.iloc[movie_index]["title"],
             "genres": df.iloc[movie_index]["genres"],
             "rating": round(df.iloc[movie_index]["movielens_avg_rating"], 1),
-            "similarity": round(score * 100, 1),
+            # "similarity": round(score * 100, 1), # bortkommenterad för nu
+            "similarity": round((score / len(favorite_titles)) * 100, 1), # ger tillbaka medelvärdet i % med 1 decimal
             "poster": poster_url
         })
         
