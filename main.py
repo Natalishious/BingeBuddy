@@ -1,8 +1,9 @@
 from flask import Flask, redirect, render_template, request, url_for, session
-from database import init_db, create_user, get_user
+from database import init_db, create_user, get_user, get_favorites, add_favorite, remove_favorite
 from movies import movies, genras, rating
 from recommender import recommend_movies, df
-from recommender_advanced import recommend_movies_advanced
+from recommender_advanced import recommend_movies_advanced, get_random_movie, recommend_from_favorites
+import pandas as pd
 
 init_db()  # Skapar db
 
@@ -18,6 +19,8 @@ x = movies()
 y = genras()
 o = rating()
 
+# laddar in aktuellt dataset
+df = pd.read_csv("dataset/movies_cleaned.csv")
 
 app = Flask(__name__)
 # Secret key
@@ -26,15 +29,15 @@ app.secret_key = "SECRET_KEY"
 
 @app.route("/")
 def home():
+
+    recently = get_random_movie()
+
     return render_template(
         "home/home.html",
-        x=x,
-        y=y,
-        o=o,
+        recently=recently,
         # Skickar med username här så man kan visa i HTML om någon är inloggad
         username=session.get("username")
     )
-
 
 
 @app.route('/2nd', methods=["GET", "POST"])
@@ -52,12 +55,13 @@ def recomendation():
     return render_template('inlogsida/2nd.html',
                            recommendations=recommendations,  # för jinja
                            # SAMTLIGA filmtitlar för t.ex. autofill i input-field
-                           movies=df["title"].tolist())
+                           movies=df["title"].tolist(),
+                           username=session.get("username"))
 
 
 @app.route('/about')
 def about():
-    return render_template('about/about.html')
+    return render_template('about/about.html', username=session.get("username"))
 
 
 @app.route("/register", methods=["GET", "POST"])
@@ -75,7 +79,7 @@ def register():
             return redirect(url_for("home"))
         else:
             return "Username doesn not exist!"
-    return render_template("register.html")
+    return render_template("register.html", username=session.get("username"))
 
 
 @app.route("/login", methods=["GET", "POST"])
@@ -90,10 +94,10 @@ def login():
         # user finns och lösenord matchar
         if user and user["password"] == password:
             session["username"] = username
-            return redirect(url_for("home"))
+            return redirect(url_for("profile"))
         return "Fel username eller password!"
 
-    return render_template("login.html")
+    return render_template("login.html", username=session.get("username"))
 
 
 @app.route("/logout")
@@ -101,6 +105,87 @@ def logout():
     # Tar bort user från session när man loggar ut
     session.pop("username", None)
     return redirect(url_for("home"))
+
+# ====================
+# profil-baserad logik
+# ====================
+
+
+@app.route("/profile")
+def profile():
+
+    if "username" not in session:
+        return redirect(url_for("login"))
+
+    user = get_user(session["username"])
+    favorites = get_favorites(user["id"])  # hämtar listan med favoriter
+    favorite_movies = []  # place holder för titel, rating, länkar
+
+    # loopa igenom favoriterna och hämta titel, rating och länkar
+    for row in favorites:
+        title = row["movie_title"]
+        movie_data = df[df["title"] == title].iloc[0]
+
+        # bygger poster-url
+        poster_path = movie_data["poster_path"]
+
+        if pd.notna(poster_path):  # alltså bara om det inte är en null-rad
+            poster_url = "https://image.tmdb.org/t/p/w500" + str(poster_path)
+
+        else:
+            poster_url = None
+
+        favorite_movies.append({
+            "title": movie_data["title"],
+            "genres": movie_data["genres"],
+            "rating": round(movie_data["movielens_avg_rating"], 1),
+            "poster": poster_url
+        })
+
+    # bygger lista med favorittitlar och kallar på recommender-funktionen
+    favorite_titles = []
+    for row in favorites:
+        favorite_titles.append(row["movie_title"])
+    recommended_movies = recommend_from_favorites(favorite_titles)
+
+    return render_template(
+        "profile.html",
+        user=user,
+        favorites=favorites,
+        movies=df["title"].tolist(),
+        favorite_movies=favorite_movies,
+        recommended_movies=recommended_movies,
+        username=session.get("username")
+    )
+
+
+@app.route("/add_favorite", methods=["POST"])
+def add_favorite_route():
+    # lägger till favoritfilm för den inloggade användaren
+    if "username" not in session:
+        return redirect(url_for("login"))
+
+    movie_title = request.form.get("movie_title")
+    user = get_user(session["username"])
+    add_favorite(user["id"], movie_title)
+
+    return redirect(url_for("profile"))
+
+
+@app.route("/remove_favorite", methods=["POST"])
+def remove_favorite_route():
+    # tar bort favoritfilm för den inloggade användaren via en knapp i listan med favoriter
+    if "username" not in session:
+        return redirect(url_for("login"))
+
+    movie_title = request.form.get("movie_title")
+    user = get_user(session["username"])
+    remove_favorite(user["id"], movie_title)
+
+    return redirect(url_for("profile"))
+# =========================
+# Profil-baserad logik slut
+# =========================
 
 
 if __name__ == "__main__":

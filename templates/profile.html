@@ -1,0 +1,85 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+    <div class="hero">
+        <h1>Welcome {{ user.username }}</h1><br>
+
+        <h1>Add to favorites</h1>
+
+        <form method="POST" action="{{ url_for('add_favorite_route') }}">
+            <input type="text" name="movie_title" list="movies" placeholder="Enter movie title">
+
+            <datalist id="movies">
+                {% for movie in movies %}
+
+                    <option value="{{ movie }}"></option>
+                {% endfor %}
+            </datalist>
+
+            <button type="submit">Add to favorites</button>
+        </form>
+
+    <!-- Om det finns favoriter så visas de i en lista, med en knapp som låter användaren ta bort dem -->
+     {% if favorite_movies %}
+    <h2>Your favorite movies</h2>
+
+    <table>
+        <tr>
+            <th>Title</th>
+            <th>Genres</th>
+            <th>Rating</th>
+            <th>Poster</th>
+            <th>Remove</th>
+        </tr>
+
+        {% for movie in favorite_movies %}
+        <tr>
+            <td>{{ movie.title }}</td>
+            <td>{{ movie.genres }}</td>
+            <td>{{ movie.rating }}</td>
+            
+            <td>
+                {% if movie.poster %}
+                    <!-- <img src="{{ movie.poster }}" width="100"> -->
+                     #hover link goes here#
+                {% endif %}
+            </td>
+
+            <td>
+                <form method="POST" action="{{ url_for('remove_favorite_route') }}">
+                    <!-- Syns inte för användaren men skickar rätt film till databasen -->
+                    <input type="hidden" name="movie_title" value="{{ movie.title }}">
+                    <button type="submit">Remove</button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+    {% endif %}
+    
+    <!-- om det finns favorittitlar så visas rekommenderade filmer (utifrån rekommendationer) i en annan table -->
+     {% if recommended_movies %}
+    <h2>Recommended movies</h2>
+
+    <table>
+        <tr>
+            <th>Title</th>
+            <th>Genres</th>
+            <th>Rating</th>
+            <th>Similarity</th>
+        </tr>
+
+        {% for movie in recommended_movies %}
+        <tr>
+            <td>{{ movie.title }}</td>
+            <td>{{ movie.genres }}</td>
+            <td>{{ movie.rating }}</td>
+            <td>{{ movie.similarity }}%</td>
+        </tr>
+        {% endfor %}
+    </table>
+    
+{% endif %}
+    </div>
+{% endblock %}
