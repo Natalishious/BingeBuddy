@@ -280,3 +280,54 @@ body {
     .movie-table tbody tr:nth-child(even) td {
         background-color: #fafafa;
     }
+
+
+    body{
+    margin:0;
+    font-family:Arial, sans-serif;
+    background:#f4f4f4;
+}
+
+/* ABOUT SECTION */
+
+.about{
+    width:70%;
+    margin:80px auto;
+    background:white;
+    padding:40px;
+    border-radius:12px;
+    box-shadow:0 4px 10px rgba(0,0,0,0.1);
+    text-align:center;
+}
+
+.about h1{
+    margin-bottom:20px;
+    color:#333;
+    font-size:2.5rem;
+}
+
+.about p{
+    color:#555;
+    line-height:1.8;
+    font-size:1.1rem;
+    margin-bottom:20px;
+}
+
+/* BUTTON */
+
+.about-btn{
+    display:inline-block;
+    margin-top:20px;
+    padding:12px 25px;
+    background:#4CAF50;
+    color:white;
+    text-decoration:none;
+    border-radius:8px;
+    font-weight:bold;
+    transition:0.3s;
+}
+
+.about-btn:hover{
+    background:#45a049;
+}
+
