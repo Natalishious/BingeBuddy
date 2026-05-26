@@ -124,6 +124,13 @@ def profile():
     # loopa igenom favoriterna och hämta titel, rating och länkar
     for row in favorites:
         title = row["movie_title"]
+
+        # safeguard mot "trasig" databas
+        filtered_movie = df[df["title"] == title]
+        if filtered_movie.empty:
+            continue
+        movie_data = filtered_movie.iloc[0]
+
         movie_data = df[df["title"] == title].iloc[0]
 
         # bygger poster-url
@@ -161,11 +168,19 @@ def profile():
 
 @app.route("/add_favorite", methods=["POST"])
 def add_favorite_route():
+
     # lägger till favoritfilm för den inloggade användaren
     if "username" not in session:
         return redirect(url_for("login"))
 
     movie_title = request.form.get("movie_title")
+
+    # safeguard mot tom input
+    if not movie_title:
+        return redirect(url_for("profile"))
+    if movie_title not in df["title"].values:
+        return redirect(url_for("profile"))
+    
     user = get_user(session["username"])
     add_favorite(user["id"], movie_title)
 
