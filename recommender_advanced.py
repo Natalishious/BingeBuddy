@@ -91,13 +91,24 @@ def get_random_movie():
 
     movie = high_rated.sample(1).iloc[0] # väljer ut (1) rad på måfå bland filtrerade filmer
 
+    poster_path = movie["poster_path"]
+
+    if pd.notna(poster_path):
+        poster_url = ("https://image.tmdb.org/t/p/w500" + str(poster_path))
+    else:
+        poster_url = None # safeguard
+
     return {
 
         "title": movie["title"],
 
         "genres": movie["genres"],
 
-        "rating": round(movie["movielens_avg_rating"], 1)
+        "rating": round(movie["movielens_avg_rating"], 1),
+
+        "overview": movie["overview"],
+
+        "poster": poster_url
     }
 
 def recommend_from_favorites(favorite_titles):

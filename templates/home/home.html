@@ -2,35 +2,33 @@
 
 {% block content %}
 
+<div class="home-page" style="background-image: url('{{ recently['poster'] }}');">
 
+    <div class="home-overlay">
 
-<div class="container">
-    
+        <section class="home-hero">
 
-    <div class="hero">
-        <h2>Welcome to movie recommendation</h2>
-        <h2>This week</h2>
-    </div>
+            <p class="welcome-text">Welcome to BingeBuddy</p>
 
-    <div class="cards">
+            <a href="{{ url_for('home') }}" class="hero-label">
+                Discover Something New
+            </a>
 
-        <div class="card">
-            <h3>Movie</h3>
-            <p class="values">{{recently['title']}}</p>
-        </div>
+            <h1>{{ recently['title'] }}</h1>
 
-        <div class="card">
-            <h3>Genres</h3>
-            <p class="values">{{recently['genres']}}</p>
-        </div>
+            <p class="hero-synopsis">
+                {{ recently['overview'][:180] }}...
+            </p>
 
-        <div class="card">
-            <h3>Rating</h3>
-            <p class="values">{{recently['rating']}}</p>
-        </div>
+            <div class="hero-tags">
+                <span>{{ recently['genres'] }}</span>
+                <span>Rating: {{ recently['rating'] }}</span>
+            </div>
+
+        </section>
 
     </div>
 
 </div>
-        
+
 {% endblock %}
