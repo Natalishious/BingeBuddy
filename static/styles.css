@@ -8,12 +8,19 @@
 /* BASE */
 body {
     font-family: "Segoe UI", Roboto, sans-serif;
-    background-image: url("assets/udZA38R.jpg");
+    background-image: url("assets/starry_night.jpg");
     background-size: cover;
     background-position: center;
     background-attachment: fixed;
     color: #333;
     min-height: 100vh;
+}
+
+body {
+    background-image: url("assets/starry_night.jpg");
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
 }
 
 .container {
@@ -201,57 +208,66 @@ body {
 /* ABOUT PAGE */
 
 .about {
-    width: 70%;
-    margin: 80px auto;
+    max-width: 850px;
+    margin: 130px auto 80px;
 
-    background: rgba(255, 255, 255, 0.92);
-    backdrop-filter: blur(10px);
+    padding: 3.5rem 4rem;
 
-    padding: 40px;
-    border-radius: 16px;
+    background: rgba(8, 15, 30, 0.72);
+    backdrop-filter: blur(18px);
 
-    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 28px;
+
+    box-shadow: 0 25px 80px rgba(0, 0, 0, 0.35);
 
     text-align: center;
+    color: white;
 }
 
 .about h1 {
-    margin-bottom: 25px;
-    color: #333;
-    font-size: 2.7rem;
+    margin-bottom: 2rem;
+
+    font-size: clamp(3rem, 6vw, 5rem);
+    line-height: 1;
+
+    color: white;
+    font-family: Georgia, "Times New Roman", serif;
+    font-weight: 500;
 }
 
 .about p {
-    color: #555;
-    line-height: 1.9;
-    font-size: 1.1rem;
-    margin-bottom: 22px;
-}
+    max-width: 720px;
+    margin: 0 auto 1.4rem;
 
-/* ABOUT BUTTON */
+    color: rgba(255, 255, 255, 0.82);
+
+    font-size: 1.05rem;
+    line-height: 1.8;
+}
 
 .about-btn {
     display: inline-block;
 
-    margin-top: 20px;
-    padding: 12px 25px;
+    margin-top: 1.8rem;
+    padding: 0.8rem 1.4rem;
 
-    background: #4f46e5;
+    background: rgba(255, 255, 255, 0.16);
     color: white;
 
-    text-decoration: none;
-    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.22);
+    border-radius: 999px;
 
-    font-weight: bold;
+    text-decoration: none;
+    font-weight: 700;
 
     transition: 0.3s ease;
 }
 
 .about-btn:hover {
-    background: #3730a3;
+    background: rgba(255, 255, 255, 0.28);
     transform: translateY(-2px);
 }
-
 
 
 
