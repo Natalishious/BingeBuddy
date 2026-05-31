@@ -6,7 +6,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Movies</title>
+    
 
 <style>
     .table-container {
@@ -103,18 +103,24 @@
         transform: scale(0.97);
     }
 
+    
+
 </style>
 
 </head>
 <body>
 
-    <h1 style="text-align:center; color: white;">Movie Table</h1>
+    
 
 
 
 
 
 <div class="table-container">
+
+<h1 style="text-align:center; color:white; margin-top:120px;">
+    Movie Table
+</h1>
 
 <form method="get" action="{{ url_for('sökmotor') }}">
     <input type="text" name="q" value="{{ q if q else '' }}">
