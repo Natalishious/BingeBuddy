@@ -204,7 +204,46 @@ def remove_favorite_route():
 # Profil-baserad logik slut
 # =========================
 
+@app.route('/sökmotor')
+def sökmotor():
+    
+    l1 = get_all_movies()
 
+    # Convert columns into rows
+    movies = list(zip(l1[0], l1[1], l1[2]))
+
+    # Get search query
+    q = request.args.get("q", "").strip()
+
+    # Filter movies if a search query exists
+    if q:
+        q_lower = q.lower()
+
+        movies = [
+            movie for movie in movies
+            if q_lower in movie[0].lower()      # title
+            or q_lower in movie[1].lower()      # genre
+            or q == str(movie[2])               # rating
+        ]
+
+    # Pagination
+    page = request.args.get("page", 1, type=int)
+    per_page = 100
+
+    start = (page - 1) * per_page
+    end = start + per_page
+
+    paginated_movies = movies[start:end]
+
+    total_pages = math.ceil(len(movies) / per_page)
+
+    return render_template(
+        "sökmotor.html",
+        movies=paginated_movies,
+        page=page,
+        total_pages=total_pages,
+        q=q
+    )
 
 
 if __name__ == "__main__":
