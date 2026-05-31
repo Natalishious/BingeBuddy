@@ -152,6 +152,32 @@ def recommend_from_favorites(favorite_titles):
         
     return results
 
+
+
+def get_all_movies():
+    
+
+    l1=[[],[],[]]
+
+    for i in df['title']:
+        l1[0].append(i)
+    
+    for i in df['genres']:
+        l1[1].append(i)
+    
+    for i in df['movielens_avg_rating']:
+        x=round(i,1)
+        l1[2].append(x)
+
+    
+
+    return l1
+
+
+
+
+
+
 # test för att se att utskrift sker korrekt i terminal
 if __name__ == "__main__":
 
