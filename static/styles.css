@@ -414,3 +414,11 @@ body {
     margin: 0.2rem 0;
     font-size: 0.9rem;
 }
+
+.login-container {
+    padding-top: 120px;
+}
+
+.register-container {
+    padding-top: 120px;
+}
