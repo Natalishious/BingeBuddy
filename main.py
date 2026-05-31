@@ -2,8 +2,10 @@ from flask import Flask, redirect, render_template, request, url_for, session
 from database import init_db, create_user, get_user, get_favorites, add_favorite, remove_favorite
 from movies import movies, genras, rating
 from recommender import recommend_movies, df
-from recommender_advanced import recommend_movies_advanced, get_random_movie, recommend_from_favorites
+from recommender_advanced import recommend_movies_advanced, get_random_movie, recommend_from_favorites, get_all_movies
 import pandas as pd
+import math
+
 
 init_db()  # Skapar db
 
@@ -201,6 +203,8 @@ def remove_favorite_route():
 # =========================
 # Profil-baserad logik slut
 # =========================
+
+
 
 
 if __name__ == "__main__":
