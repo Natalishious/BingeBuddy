@@ -1,21 +1,15 @@
-from flask import Flask, redirect, render_template, request, url_for, session
-from database import init_db, create_user, get_user, get_favorites, add_favorite, remove_favorite
-from movies import movies, genras, rating
-from recommender import recommend_movies, df
-from recommender_advanced import recommend_movies_advanced, get_random_movie, recommend_from_favorites, get_all_movies
-import pandas as pd
 import math
+import pandas as pd
+from recommender_advanced import recommend_movies_advanced, get_random_movie, recommend_from_favorites, get_all_movies
+from recommender import recommend_movies, df
+from movies import movies, genras, rating
+from database import init_db, create_user, get_user, get_favorites, add_favorite, remove_favorite
+from flask import Flask, redirect, render_template, request, url_for, session
+from werkzeug.security import generate_password_hash, check_password_hash
 
 
 init_db()  # Skapar db
 
-# Lägger till användare:
-success = create_user("Jimpan", "test123")
-print(f"User created: {success}!")
-
-# Hämta användare
-user = get_user("Jimpan")
-print(f"User retrieved: {user}")
 
 x = movies()
 y = genras()
@@ -71,16 +65,25 @@ def register():
     if request.method == "POST":
         username = request.form["username"].strip()
         password = request.form["password"].strip()
+        confirm_password = request.form["confirm_password"].strip()
 
-        if not username or not password:
-            return "Fyll i username och password!"
+        # Lite extra validering
+        if not username or not password or not confirm_password:
+            return "Fyll i alla fält."
 
-        created = create_user(username, password)
+        if len(password) < 8:
+            return "Lösenord måste vara minst 8 tecken."
+
+        if password != confirm_password:
+            return "Lösenorden matchar inte."
+
+        password_hash = generate_password_hash(password)
+        created = create_user(username, password_hash)
+
         if created:
-            # Går tillbaka till home och skapad
             return redirect(url_for("home"))
-        else:
-            return "Username doesn not exist!"
+        return "Användarnamnet finns redan."
+
     return render_template("register.html", username=session.get("username"))
 
 
@@ -93,8 +96,8 @@ def login():
         # Hämtar user från databasen
         user = get_user(username)
 
-        # user finns och lösenord matchar
-        if user and user["password"] == password:
+        # user finns och lösenord matchar // Jämför nu med det hashade lösenordet
+        if user and check_password_hash(user["password"], password):
             session["username"] = username
             return redirect(url_for("profile"))
         return "Fel username eller password!"
@@ -182,7 +185,7 @@ def add_favorite_route():
         return redirect(url_for("profile"))
     if movie_title not in df["title"].values:
         return redirect(url_for("profile"))
-    
+
     user = get_user(session["username"])
     add_favorite(user["id"], movie_title)
 
@@ -204,9 +207,10 @@ def remove_favorite_route():
 # Profil-baserad logik slut
 # =========================
 
+
 @app.route('/sökmotor')
 def sökmotor():
-    
+
     l1 = get_all_movies()
 
     # Convert columns into rows
