@@ -15,7 +15,7 @@ df = pd.read_csv("dataset/movies_cleaned.csv")
 # kombinerar flera features
 # fillna safeguardar mot eventuella NaN-rader i overview
 df["features"] = (
-    df["genres"].fillna("").str.replace("|", " ", regex=False)
+    df["genres"].fillna("").str.replace("|", " ", regex=False) * 4 # viktar kategorin genres hårdare
     + " " +
     df["overview"].fillna("")
 )
@@ -91,13 +91,24 @@ def get_random_movie():
 
     movie = high_rated.sample(1).iloc[0] # väljer ut (1) rad på måfå bland filtrerade filmer
 
+    poster_path = movie["poster_path"]
+
+    if pd.notna(poster_path):
+        poster_url = ("https://image.tmdb.org/t/p/w500" + str(poster_path))
+    else:
+        poster_url = None # safeguard
+
     return {
 
         "title": movie["title"],
 
         "genres": movie["genres"],
 
-        "rating": round(movie["movielens_avg_rating"], 1)
+        "rating": round(movie["movielens_avg_rating"], 1),
+
+        "overview": movie["overview"],
+
+        "poster": poster_url
     }
 
 def recommend_from_favorites(favorite_titles):
@@ -146,11 +157,38 @@ def recommend_from_favorites(favorite_titles):
             "title": df.iloc[movie_index]["title"],
             "genres": df.iloc[movie_index]["genres"],
             "rating": round(df.iloc[movie_index]["movielens_avg_rating"], 1),
-            "similarity": round(score * 100, 1),
+            # "similarity": round(score * 100, 1), # bortkommenterad för nu
+            "similarity": round((score / len(favorite_titles)) * 100, 1), # ger tillbaka medelvärdet i % med 1 decimal
             "poster": poster_url
         })
         
     return results
+
+
+
+def get_all_movies():
+    
+
+    l1=[[],[],[]]
+
+    for i in df['title']:
+        l1[0].append(i)
+    
+    for i in df['genres']:
+        l1[1].append(i)
+    
+    for i in df['movielens_avg_rating']:
+        x=round(i,1)
+        l1[2].append(x)
+
+    
+
+    return l1
+
+
+
+
+
 
 # test för att se att utskrift sker korrekt i terminal
 if __name__ == "__main__":
