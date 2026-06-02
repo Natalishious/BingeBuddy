@@ -17,12 +17,45 @@
     box-sizing: border-box;
     }
 
+    .favorite-form {
+        display: flex;
+        justify-content: center;
+        gap: 12px;
+        margin-bottom: 40px;
+    }
+
+    .favorite-form input {
+        width: 350px;
+        padding: 12px;
+        border-radius: 8px;
+        border: 1px solid #ccc;
+        font-size: 16px;
+    }
+
+    .favorite-form button,
+    .remove-btn {
+        background: #1f2937;
+        color: white;
+        border: none;
+        padding: 12px 18px;
+        border-radius: 8px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: 0.25s;
+    }
+
+    .favorite-form button:hover,
+    .remove-btn:hover {
+        background: #374151;
+        transform: translateY(-2px);
+    }
+
     table {
         width: 100%;
         border-collapse: collapse;
         background: white;
         border-radius: 12px;
-        overflow: hidden;
+        overflow: visible;
         box-shadow: 0 4px 12px rgba(0,0,0,0.12);
     }
 
@@ -60,7 +93,35 @@
          background-color: #f0f0f0;
      }
 
-    
+    .poster-hover {
+    position: relative;
+    cursor: pointer;
+    color: #2563eb;
+    text-decoration: underline;
+    font-weight: bold;
+    }
+
+    .poster-preview {
+        display: none;
+        position: absolute;
+        top: 24px;
+        left: 0;
+        z-index: 9999;
+        background: white;
+        padding: 8px;
+        border-radius: 8px;
+        box-shadow: 0 4px 14px rgba(0,0,0,0.25);
+    }
+
+    .poster-preview img {
+        width: 160px;
+        border-radius: 6px;
+        display: block;
+    }
+
+    .poster-hover:hover .poster-preview {
+        display: block;
+    }
     
      .pagination {
              text-align: center;
@@ -118,13 +179,13 @@
 
 <div class="table-container">
 
-<h1 style="text-align:center; color:white; margin-top:120px;">
+<h1 style="text-align:center; color:white; margin-top:120px; margin-bottom: 10px;">
     Movie Table
 </h1>
 
-<form method="get" action="{{ url_for('sökmotor') }}">
-    <input type="text" name="q" value="{{ q if q else '' }}">
-    <button type="submit"><i class="bx bx-search"></i></button>
+<form method="get" action="{{ url_for('sökmotor') }}" class="favorite-form">
+    <input type="text" name="q" value="{{ q if q else '' }}" placeholder="Search movie">
+    <button type="submit"><i class="bx bx-search"></i>Search</button>
 </form>
 
     <table>
@@ -132,13 +193,26 @@
             <th>Title</th>
             <th>Genre</th>
             <th>Rating</th>
+            <th>Poster</th>
         </tr>
 
-        {% for title, genre, rating in movies %}
+        {% for title, genre, rating, poster in movies %}
         <tr>
             <td>{{ title }}</td>
-            <td>{{ genre }}</td>
+            <td>{{ genre.replace('|', ', ') }}</td>
             <td>{{ rating }}</td>
+            <td>
+                {% if poster %}
+                    <span class="poster-hover">
+                        View poster
+                        <span class="poster-preview">
+                            <img src="{{ poster }}" alt="{{ title }}">
+                        </span>
+                    </span>
+                {% else %}
+                    No poster
+                {% endif %}
+            </td>
         </tr>
         {% endfor %}
     </table>
