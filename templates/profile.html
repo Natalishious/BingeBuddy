@@ -2,84 +2,236 @@
 
 {% block content %}
 
-    <div class="hero">
-        <h1>Welcome {{ user.username }}</h1><br>
+<style>
+    .profile-container {
+        width: 100%;
+        max-width: 1100px;
+        margin: 40px auto;
+        padding: 0 20px;
+        box-sizing: border-box;
+    }
 
-        <h1>Add to favorites</h1>
+    .profile-container h1,
+    .profile-container h2 {
+        color: white;
+    }
 
-        <form method="POST" action="{{ url_for('add_favorite_route') }}">
+    .profile-header {
+        text-align: center;
+        margin-bottom: 35px;
+    }
+
+    .favorite-form {
+        display: flex;
+        justify-content: center;
+        gap: 12px;
+        margin-bottom: 40px;
+    }
+
+    .favorite-form input {
+        width: 350px;
+        padding: 12px;
+        border-radius: 8px;
+        border: 1px solid #ccc;
+        font-size: 16px;
+    }
+
+    .favorite-form button,
+    .remove-btn {
+        background: #1f2937;
+        color: white;
+        border: none;
+        padding: 12px 18px;
+        border-radius: 8px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: 0.25s;
+    }
+
+    .favorite-form button:hover,
+    .remove-btn:hover {
+        background: #374151;
+        transform: translateY(-2px);
+    }
+
+    .table-container {
+        width: 100%;
+        max-width: 1100px;
+        margin: 40px auto;
+        box-sizing: border-box;
+        overflow: visible;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        background: white;
+        border-radius: 12px;
+        
+        box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+    }
+
+    th {
+        background: #1f2937;
+        color: white;
+    }
+
+    th, td {
+        padding: 14px;
+        border-bottom: 1px solid #e5e7eb;
+        text-align: left;
+        vertical-align: middle;
+    }
+
+    tbody tr:nth-child(even) {
+        background-color: #fafafa;
+    }
+
+    tbody tr:hover {
+        background-color: #f0f0f0;
+    }
+
+    .poster-hover {
+        position: relative;
+        cursor: pointer;
+        color: #2563eb;
+        text-decoration: underline;
+        font-weight: bold;
+    }
+
+    .poster-preview {
+        display: none;
+        position: absolute;
+        top: 24px;
+        left: 0;
+        z-index: 9999;
+        background: white;
+        padding: 8px;
+        border-radius: 8px;
+        box-shadow: 0 4px 14px rgba(0,0,0,0.25);
+    }
+
+    .poster-preview img {
+        width: 160px;
+        border-radius: 6px;
+        display: block;
+    }
+
+    .poster-hover:hover .poster-preview {
+        display: block;
+    }
+
+    
+</style>
+
+<div class="profile-container">
+
+    <div class="profile-header">
+        <h1>Welcome {{ user.username }}</h1>
+        <h2>Add to favorites</h2>
+
+        <form class="favorite-form" method="POST" action="{{ url_for('add_favorite_route') }}">
             <input type="text" name="movie_title" list="movies" placeholder="Enter movie title">
 
             <datalist id="movies">
                 {% for movie in movies %}
-
                     <option value="{{ movie }}"></option>
                 {% endfor %}
             </datalist>
 
             <button type="submit">Add to favorites</button>
         </form>
-
-    <!-- Om det finns favoriter så visas de i en lista, med en knapp som låter användaren ta bort dem -->
-     {% if favorite_movies %}
-    <h2>Your favorite movies</h2>
-
-    <table>
-        <tr>
-            <th>Title</th>
-            <th>Genres</th>
-            <th>Rating</th>
-            <th>Poster</th>
-            <th>Remove</th>
-        </tr>
-
-        {% for movie in favorite_movies %}
-        <tr>
-            <td>{{ movie.title }}</td>
-            <td>{{ movie.genres }}</td>
-            <td>{{ movie.rating }}</td>
-            
-            <td>
-                {% if movie.poster %}
-                    <!-- <img src="{{ movie.poster }}" width="100"> -->
-                     #hover link goes here#
-                {% endif %}
-            </td>
-
-            <td>
-                <form method="POST" action="{{ url_for('remove_favorite_route') }}">
-                    <!-- Syns inte för användaren men skickar rätt film till databasen -->
-                    <input type="hidden" name="movie_title" value="{{ movie.title }}">
-                    <button type="submit">Remove</button>
-                </form>
-            </td>
-        </tr>
-        {% endfor %}
-    </table>
-    {% endif %}
-    
-    <!-- om det finns favorittitlar så visas rekommenderade filmer (utifrån rekommendationer) i en annan table -->
-     {% if recommended_movies %}
-    <h2>Recommended movies</h2>
-
-    <table>
-        <tr>
-            <th>Title</th>
-            <th>Genres</th>
-            <th>Rating</th>
-            <th>Similarity</th>
-        </tr>
-
-        {% for movie in recommended_movies %}
-        <tr>
-            <td>{{ movie.title }}</td>
-            <td>{{ movie.genres }}</td>
-            <td>{{ movie.rating }}</td>
-            <td>{{ movie.similarity }}%</td>
-        </tr>
-        {% endfor %}
-    </table>
-    
-{% endif %}
     </div>
+
+    {% if favorite_movies %}
+    <div class="table-container">
+        <h2>Your favorite movies</h2>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Genres</th>
+                    <th>Rating</th>
+                    <th>Poster</th>
+                    <th>Remove</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for movie in favorite_movies %}
+                <tr>
+                    <td>{{ movie.title }}</td>
+                    <td>{{ movie.genres.replace('|', ', ') }}</td>
+                    <td>{{ movie.rating }}</td>
+
+                    <td>
+                        {% if movie.poster %}
+                            <span class="poster-hover">
+                                View poster
+                                <span class="poster-preview">
+                                    <img src="{{ movie.poster }}" alt="{{ movie.title }}">
+                                </span>
+                            </span>
+                        {% else %}
+                            No poster
+                        {% endif %}
+                    </td>
+
+                    <td>
+                        <form method="POST" action="{{ url_for('remove_favorite_route') }}">
+                            <input type="hidden" name="movie_title" value="{{ movie.title }}">
+                            <button class="remove-btn" type="submit">Remove</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% endif %}
+
+    {% if recommended_movies %}
+    <div class="table-container">
+        <h2>Recommended movies</h2>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Genres</th>
+                    <th>Rating</th>
+                    <th>Poster</th>
+                    <th>Similarity</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for movie in recommended_movies %}
+                <tr>
+                    <td>{{ movie.title }}</td>
+                    <td>{{ movie.genres.replace('|', ', ') }}</td>
+                    <td>{{ movie.rating }}</td>
+                    <td>
+                        {% if movie.poster %}
+                            <span class="poster-hover">
+                                View poster
+                                <span class="poster-preview">
+                                    <img src="{{ movie.poster }}" alt="{{ movie.title }}">
+                                </span>
+                            </span>
+                        {% else %}
+                            No poster
+                        {% endif %}
+                    </td>
+                    <td>{{ movie.similarity }}%</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% endif %}
+
+</div>
+
 {% endblock %}

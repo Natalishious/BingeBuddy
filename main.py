@@ -214,7 +214,7 @@ def sökmotor():
     l1 = get_all_movies()
 
     # Convert columns into rows
-    movies = list(zip(l1[0], l1[1], l1[2]))
+    movies = list(zip(l1[0], l1[1], l1[2], l1[3]))
 
     # Get search query
     q = request.args.get("q", "").strip()
@@ -246,7 +246,8 @@ def sökmotor():
         movies=paginated_movies,
         page=page,
         total_pages=total_pages,
-        q=q
+        q=q,
+        username=session.get("username")
     )
 
 
