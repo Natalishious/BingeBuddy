@@ -51,8 +51,14 @@ def recommend_movies_advanced(movie_title):
         if score[0] != idx:
             filtered_scores.append(score)
     sim_scores = filtered_scores
-
     sim_scores = sim_scores[:25] # 25 första
+
+    # safeguard
+    if not sim_scores:
+        return []
+    
+    # hämtar film (index, score) med högst score
+    max_score = sim_scores[0][1]
 
     # lägger indexet för ovan filmer i en egen lista
     # movie_indices = []
@@ -74,8 +80,10 @@ def recommend_movies_advanced(movie_title):
 
         results.append({
             "title": df.iloc[movie_index]["title"],
+            "genres": df.iloc[movie_index]["genres"],
             "rating": round(df.iloc[movie_index]["movielens_avg_rating"], 1), # avrunda till 1 decimal
-            "similarity": round(similarity_score * 100, 1), # multiplicera med 100 för att få ett värde i %
+            # "similarity": round(similarity_score * 100, 1), # multiplicera med 100 för att få ett värde i %
+            "similarity": round((similarity_score / max_score) * 100, 1), # ger relativ ranking istället
             "poster": poster_url # url till filmens poster i jpg-format
         })
 
@@ -141,8 +149,14 @@ def recommend_from_favorites(favorite_titles):
     
     # sortera efter högst total score
     sorted_movies = sorted(total_scores.items(), key=lambda x: x[1], reverse=True)
+    sorted_movies = sorted_movies[:20] # bara de tjugo högst rankade
 
-    sorted_movies = sorted_movies[:10] # bara de tio högst rankade
+    # safeguard
+    if not sorted_movies:
+        return []
+
+    # testar detta so malternativ metod för att visa "score"
+    max_score = sorted_movies[0][1]
 
     # bygg lista med titel, betyg, poster path et.c. för jinja
     results = []
@@ -158,7 +172,8 @@ def recommend_from_favorites(favorite_titles):
             "genres": df.iloc[movie_index]["genres"],
             "rating": round(df.iloc[movie_index]["movielens_avg_rating"], 1),
             # "similarity": round(score * 100, 1), # bortkommenterad för nu
-            "similarity": round((score / len(favorite_titles)) * 100, 1), # ger tillbaka medelvärdet i % med 1 decimal
+            # "similarity": round((score / len(favorite_titles)) * 100, 1), # ger tillbaka medelvärdet i % med 1 decimal
+            "similarity": round((score / max_score) * 100, 1), # ger oss relativ matchningspoäng
             "poster": poster_url
         })
         
@@ -169,7 +184,7 @@ def recommend_from_favorites(favorite_titles):
 def get_all_movies():
     
 
-    l1=[[],[],[]]
+    l1=[[],[],[],[]]
 
     for i in df['title']:
         l1[0].append(i)
@@ -181,6 +196,13 @@ def get_all_movies():
         x=round(i,1)
         l1[2].append(x)
 
+    for i in df['poster_path']:
+        if pd.notna(i):
+            poster_url = "https://image.tmdb.org/t/p/w500" + str(i)
+        else:
+            poster_url = None
+
+        l1[3].append(poster_url)
     
 
     return l1

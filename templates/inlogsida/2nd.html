@@ -2,17 +2,139 @@
 
 {% block content %}
 
+<style>
+    .profile-container {
+        width: 100%;
+        max-width: 1100px;
+        margin: 40px auto;
+        padding: 0 20px;
+        box-sizing: border-box;
+        min-height: 70vh;
+    }
 
+    .profile-container h1,
+    .profile-container h2,
+    .profile-container h3 {
+        color: white;
+    }
 
-<div class="container">
-    
-    <div class="hero">
-        <h1>Recommender</h1>
-        <p>
-            Discover movies based on your favorite films and genres.
-        </p>
+    .profile-header {
+        text-align: center;
+        margin-bottom: 35px;
+    }
+
+    .favorite-form {
+        display: flex;
+        justify-content: center;
+        gap: 12px;
+        margin-bottom: 40px;
+    }
+
+    .favorite-form input {
+        width: 350px;
+        padding: 12px;
+        border-radius: 8px;
+        border: 1px solid #ccc;
+        font-size: 16px;
+    }
+
+    .favorite-form button,
+    .remove-btn {
+        background: #1f2937;
+        color: white;
+        border: none;
+        padding: 12px 18px;
+        border-radius: 8px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: 0.25s;
+    }
+
+    .favorite-form button:hover,
+    .remove-btn:hover {
+        background: #374151;
+        transform: translateY(-2px);
+    }
+
+    .table-container {
+        width: 100%;
+        max-width: 1100px;
+        margin: 40px auto;
+        box-sizing: border-box;
+        overflow: visible;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        background: white;
+        border-radius: 12px;
         
-        <form method="POST" class="recommend-form">
+        box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+    }
+
+    th {
+        background: #1f2937;
+        color: white;
+    }
+
+    th, td {
+        padding: 14px;
+        border-bottom: 1px solid #e5e7eb;
+        text-align: left;
+        vertical-align: middle;
+    }
+
+    tbody tr:nth-child(even) {
+        background-color: #fafafa;
+    }
+
+    tbody tr:hover {
+        background-color: #f0f0f0;
+    }
+
+    .poster-hover {
+        position: relative;
+        cursor: pointer;
+        color: #2563eb;
+        text-decoration: underline;
+        font-weight: bold;
+    }
+
+    .poster-preview {
+        display: none;
+        position: absolute;
+        top: 24px;
+        left: 0;
+        z-index: 9999;
+        background: white;
+        padding: 8px;
+        border-radius: 8px;
+        box-shadow: 0 4px 14px rgba(0,0,0,0.25);
+    }
+
+    .poster-preview img {
+        width: 160px;
+        border-radius: 6px;
+        display: block;
+    }
+
+    .poster-hover:hover .poster-preview {
+        display: block;
+    }
+
+
+</style>
+
+<div class="profile-container">
+    
+    <div class="profile-header">
+        
+        
+        <br><br><br><h3>Discover movies based on your favorite films and genres.</h3><br>
+        
+        
+        <form method="POST" class="favorite-form">
             <!-- Möjliggör att skriva in en titel och få förslag som auto complete -->
             <!-- name="movie_title" kopplar till flasks request.form.get -->
             <!-- list="movies" betyder att input-fältet använder en datalist som heter movies (se längre ner) -->
@@ -30,51 +152,49 @@
 
             <button type="submit">Recommend</button>
         </form>
-
-       
-        {% if not recommendations %}
-
-        <table class="movie-table">
-            <thead>
-                <tr>
-                    <th>Recommended movies</th>
-                    <th>Rating</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for i in range(5) %}
-                    <tr>
-                        <td></td>
-                        <td></td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-
-        {% endif %}
+    </div>
 
         
         {% if recommendations %}
-            <table class="movie-table">
+
+        <div class="table-container">
+            <table>
                 <thead>
                     <tr>
                         <th>Recommended movies</th>
+                        <th>Genres</th>
                         <th>Rating</th>
+                        <th>Similarity</th>
+                        <th>Poster</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for movie in recommendations %}
                         <tr>
-                            <td>{{ movie['title'] }}</td>
-                            <td>{{ movie['rating'] }}</td>
+                            <td>{{ movie.title }}</td>
+                            <td>{{ movie.genres.replace('|', ', ') }}</td>
+                            <td>{{ movie.rating }}</td>
+                            <td>{{ movie.similarity }}%</td>
+                            <td>
+                                {% if movie.poster %}
+                                    <span class="poster-hover">
+                                        View poster
+                                        <span class="poster-preview">
+                                            <img src="{{ movie.poster }}" alt="{{ movie.title }}">
+                                        </span>
+                                    </span>
+                                {% else %}
+                                    No poster
+                                {% endif %}
+                            </td>
                         </tr>
                     {% endfor %}
                 </tbody>
             </table>
+        </div>
+
         {% endif %}
         
-    </div>
-    
 </div>
     
 {% endblock %}
